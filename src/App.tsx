@@ -1,32 +1,44 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Home from './pages/Home';
-import About from './pages/About';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
-import AddDoctor from './pages/Doctors';
-import DisplayDoctors from './components/ui/DisplayDoctors';
 import Dashboard from './pages/Dashboard';
-import ForgotPassword from './pages/ForgotPassword';
-import Billing from './pages/Billing';
+//import ForgotPassword from './pages/ForgotPassword';
 import { Toaster } from 'sonner';
-import Patients from './pages/Patients';
+import PrivateRoute from './PrivateRoute';
+import axios from 'axios';
 
 const App: React.FC = () => {
-  
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        if (token) {
+          await axios.get('http://localhost:8080/auth/protected', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        }
+      } catch {
+        setToken(null);
+        localStorage.removeItem('token');
+      }
+    };
+
+    if (token) {
+      checkToken();
+    }
+  }, [token]);
+
   return (
     <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/add-doctor" element={<AddDoctor />} />
-          <Route path="/display-doctors" element={<DisplayDoctors />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/forgotPassword" element={<ForgotPassword />} />
-          <Route path="/display-patients" element={<Patients />} />
-          <Route path="/billing" element={<Billing />} />
-        </Routes>
-        <Toaster richColors />
+      <Routes>
+        <Route path="/" element={<Login setToken={setToken} />} />
+        <Route path="/dashboard" element={<PrivateRoute component={Dashboard} />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+      <Toaster richColors />
     </Router>
   );
 }

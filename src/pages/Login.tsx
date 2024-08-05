@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import axios from "axios";
 import {
   Card,
@@ -11,14 +11,20 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Button } from "../components/ui/button";
 import { toast } from "sonner";
+//import { set } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 const hopitalImg = require('./hospital.png'); 
 
+interface LoginProps {
+  setToken: (token: string) => void;
+}
 
-const Login: React.FC = () => {
+const Login: React.FC <LoginProps> = ({ setToken }) =>{
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -32,25 +38,15 @@ const Login: React.FC = () => {
       });
 
       console.log(response);
-      console.log(response.data.token);
-
-      if (response.status === 200) {
-        setSuccess("Login successful!");
-        toast.success("Login Successful");
-        window.location.href = "/dashboard";
-      }
+      setToken(response.data.token);
+      localStorage.setItem("token", response.data.token);
+      navigate("/dashboard");
+      toast.success("Login successful");
+      //console.log(response.data.token);
+      
+      
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        console.error("Axios error:", err);
-        toast.error("Login Failed");
-        const errorMessage =
-          err.response?.data?.error || "An unexpected error occurred";
-        setError(errorMessage);
-      } else {
-        console.error("Unexpected error:", err);
-        toast.error("Login Failed");
-        setError("An unexpected error occurred");
-      }
+      console.error(err);
     }
   };
 
