@@ -1,5 +1,6 @@
 import React from "react";
-import BillingComponent from "../components/ui/BillingComponent";
+// import BillingComponent from "../components/ui/BillingComponent";
+import {BillingPopoverDemo} from "../components/ui/BillingPopoverDemo";
 const adminPImg = require("./admin-p.png");
 const Billing: React.FC = () => {
 return (
@@ -9,7 +10,7 @@ return (
           <h1>Billing</h1>
         </div>
         <div className="flex-grow flex justify-center">
-          <b> Create Bill </b>
+          <BillingPopoverDemo />
         </div>
         
         <div className="flex-grow flex justify-end">
@@ -21,7 +22,7 @@ return (
         </div>
       </div>
       <div>
-        <BillingComponent />
+        {/* <BillingComponent /> */}
       </div>
     </div>
 
